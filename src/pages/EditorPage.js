@@ -45,7 +45,6 @@ const EditorPage = () => {
         ({ clients, username, socketId }) => {
           if (username !== location.state?.username) {
             toast.success(`${username} joined the room.`);
-            console.log(`${username} joined`);
           }
           setClients(clients);
           socketRef.current.emit(ACTIONS.SYNC_CODE, {

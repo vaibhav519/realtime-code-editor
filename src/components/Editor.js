@@ -18,10 +18,43 @@ const Editor = ({
   onLanguageChange,
 }) => {
   const editorRef = useRef(null);
-  const inputRef = useRef(null);
-  const outputRef = useRef(null);
-  const languageRef = useRef(null);
   const [selectedLanguage, setSelectedLanguage] = useState("Python");
+  const [output, setOutput] = useState("");
+  const [input, setInput] = useState("");
+
+  const handleSubmit = async () => {
+    const code = editorRef.current.getValue();
+
+    const dataPayload = {
+      selectedLanguage,
+      code,
+      input,
+    };
+    try {
+      const response = await fetch("http://localhost:5000/run-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataPayload),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        if (result.stdout !== "") {
+          setOutput(result.stdout);
+        } else if (result.stderr !== "") {
+          let errMsg = result.stderr.replace(/File "[^"]+", /g, "");
+          setOutput(errMsg);
+        }
+        console.log("Backend Response:", result);
+      } else {
+        console.error("Backend API Request Failed");
+      }
+    } catch (error) {
+      console.error("Backend API Request Error:", error);
+    }
+  };
+
   useEffect(() => {
     async function init() {
       editorRef.current = Codemirror.fromTextArea(
@@ -34,54 +67,45 @@ const Editor = ({
           lineNumbers: true,
         }
       );
-      inputRef.current = document.getElementById("input");
-      outputRef.current = document.getElementById("output");
-      languageRef.current = document.getElementById("inlineFormSelectPref");
 
       editorRef.current.on("change", (instance, changes) => {
         const { origin } = changes;
         const code = instance.getValue();
-        console.log(editorRef.current);
         onCodeChange(code);
         if (origin !== "setValue") {
-          socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+          socketRef.current?.emit(ACTIONS.CODE_CHANGE, {
             roomId,
             code,
           });
         }
       });
-
-      inputRef.current.addEventListener("change", (event) => {
-        const input = event.target.value;
-        onInputChange(input);
-        socketRef.current.emit(ACTIONS.INPUT_CHANGE, {
-          roomId,
-          input,
-        });
-      });
-
-      outputRef.current.addEventListener("change", (event) => {
-        const output = event.target.value;
-        onOutputChange(output);
-        socketRef.current.emit(ACTIONS.OUTPUT_CHANGE, {
-          roomId,
-          output,
-        });
-      });
-
-      languageRef.current.addEventListener("change", function () {
-        const selected = languageRef.current.value;
-        setSelectedLanguage(selected);
-        onLanguageChange(selected);
-        socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, {
-          roomId,
-          language: selected,
-        });
-      });
     }
-
     init();
   }, []);
+
+  useEffect(() => {
+    onInputChange(input);
+    socketRef.current?.emit(ACTIONS.INPUT_CHANGE, {
+      roomId,
+      input,
+    });
+  }, [input]);
+
+  useEffect(() => {
+    onOutputChange(output);
+    socketRef.current?.emit(ACTIONS.OUTPUT_CHANGE, {
+      roomId,
+      output,
+    });
+  }, [output]);
+
+  useEffect(() => {
+    onLanguageChange(selectedLanguage);
+    socketRef.current?.emit(ACTIONS.LANGUAGE_CHANGE, {
+      roomId,
+      language: selectedLanguage,
+    });
+  }, [selectedLanguage]);
 
   useEffect(() => {
     if (selectedLanguage === "Java") {
@@ -97,26 +121,24 @@ const Editor = ({
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
         if (code !== null) {
-          console.log("inside", editorRef.current);
           editorRef.current.setValue(code);
         }
       });
 
       socketRef.current.on(ACTIONS.INPUT_CHANGE, ({ input }) => {
         if (input !== null) {
-          inputRef.current.value = input; // Update the input element's value
+          setInput(input);
         }
       });
 
       socketRef.current.on(ACTIONS.OUTPUT_CHANGE, ({ output }) => {
         if (output !== null) {
-          outputRef.current.value = output; // Update the output element's value
+          setOutput(output);
         }
       });
 
       socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
         if (language !== null) {
-          languageRef.current.value = language; // Update the language element's value
           setSelectedLanguage(language);
         }
       });
@@ -131,24 +153,34 @@ const Editor = ({
 
   return (
     <>
-      <div class="d-flex justify-content-between rounded p-2 m-1">
-        <div class="w-auto">
-          <label class="visually-hidden" for="inlineFormSelectPref"></label>
+      <div className="d-flex justify-content-between rounded p-2 m-1">
+        <div className="w-auto">
+          <label
+            className="visually-hidden"
+            htmlFor="inlineFormSelectPref"
+          ></label>
           <select
-            class="form-select btn dropdown-toggle"
+            className="form-select btn dropdown-toggle"
             style={{ background: "#1c1e29", color: "white" }}
             id="inlineFormSelectPref"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
           >
-            <option selected>Python</option>
+            <option value="Python">Python</option>
             <option value="Java">Java</option>
             <option value="Cpp">Cpp</option>
             <option value="JavaScript">JavaScript</option>
           </select>
         </div>
         <div>
-          <button type="button" id="run" className="btn runBtn">
+          <button
+            type="button"
+            id="run"
+            className="btn runBtn"
+            onClick={handleSubmit}
+          >
             <img
-              class="d-flex justify-content-center align-item-center"
+              className="d-flex justify-content-center align-item-center"
               width="20"
               height="20"
               src="https://img.icons8.com/ios-glyphs/30/FFFFFF/play--v1.png"
@@ -158,25 +190,29 @@ const Editor = ({
         </div>
       </div>
       <textarea id="realtimeEditor"></textarea>
-      <div class="d-flex rounded bg-dark my-2 py-1">
-        <div class="w-50 mx-1">
+      <div className="d-flex rounded bg-dark my-2 py-1">
+        <div className="w-50 mx-1">
           <textarea
             type="text"
             id="input"
-            class="form-control"
+            className="form-control"
             style={{ height: "25vh", background: "#1c1e29", color: "white" }}
             aria-label="Last name"
             placeholder="Enter Input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
           ></textarea>
         </div>
-        <div class="w-50 mx-2">
+        <div className="w-50 mx-2">
           <textarea
             type="text"
             id="output"
-            class="form-control"
+            className="form-control"
             style={{ height: "25vh", background: "#1c1e29", color: "white" }}
             aria-label="Last name"
             placeholder="Output"
+            value={output}
+            onChange={(e) => setOutput(e.target.value)}
           ></textarea>
         </div>
       </div>
