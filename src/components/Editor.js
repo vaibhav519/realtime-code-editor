@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import Codemirror from "codemirror";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/dracula.css";
-import "codemirror/mode/javascript/javascript";
-import "codemirror/mode/clike/clike";
-import "codemirror/mode/python/python";
-import "codemirror/addon/edit/closetag";
-import "codemirror/addon/edit/closebrackets";
+import "ace-builds";
+import AceEditor from "react-ace";
+import "brace/mode/javascript";
+import "brace/mode/c_cpp";
+import "brace/mode/java";
+import "brace/mode/python";
+import "brace/theme/dracula";
+import "brace/snippets/html";
+import "brace/ext/language_tools";
 import ACTIONS from "../Actions";
 
 const Editor = ({
@@ -18,18 +19,18 @@ const Editor = ({
   onLanguageChange,
 }) => {
   const editorRef = useRef(null);
-  const [selectedLanguage, setSelectedLanguage] = useState("Python");
+  const [lang, setLang] = useState("Python");
   const [output, setOutput] = useState("");
   const [input, setInput] = useState("");
+  const [code, setCode] = useState("");
 
   const handleSubmit = async () => {
-    const code = editorRef.current.getValue();
-
     const dataPayload = {
-      selectedLanguage,
+      lang,
       code,
       input,
     };
+    console.log(dataPayload);
     try {
       const response = await fetch("http://localhost:5000/run-code", {
         method: "POST",
@@ -56,32 +57,12 @@ const Editor = ({
   };
 
   useEffect(() => {
-    async function init() {
-      editorRef.current = Codemirror.fromTextArea(
-        document.getElementById("realtimeEditor"),
-        {
-          mode: "text/x-python",
-          theme: "dracula",
-          autoCloseTags: true,
-          autoCloseBrackets: true,
-          lineNumbers: true,
-        }
-      );
-
-      editorRef.current.on("change", (instance, changes) => {
-        const { origin } = changes;
-        const code = instance.getValue();
-        onCodeChange(code);
-        if (origin !== "setValue") {
-          socketRef.current?.emit(ACTIONS.CODE_CHANGE, {
-            roomId,
-            code,
-          });
-        }
-      });
-    }
-    init();
-  }, []);
+    onCodeChange(code);
+    socketRef.current?.emit(ACTIONS.CODE_CHANGE, {
+      roomId,
+      code,
+    });
+  }, [code]);
 
   useEffect(() => {
     onInputChange(input);
@@ -100,28 +81,18 @@ const Editor = ({
   }, [output]);
 
   useEffect(() => {
-    onLanguageChange(selectedLanguage);
+    onLanguageChange(lang);
     socketRef.current?.emit(ACTIONS.LANGUAGE_CHANGE, {
       roomId,
-      language: selectedLanguage,
+      language: lang,
     });
-  }, [selectedLanguage]);
-
-  useEffect(() => {
-    if (selectedLanguage === "Java") {
-      editorRef.current.setOption("mode", "text/x-java");
-    } else if (selectedLanguage === "JavaScript") {
-      editorRef.current.setOption("mode", "javascript");
-    } else if (selectedLanguage === "Cpp") {
-      editorRef.current.setOption("mode", "text/x-c++src");
-    }
-  }, [selectedLanguage]);
+  }, [lang]);
 
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
         if (code !== null) {
-          editorRef.current.setValue(code);
+          setCode(code);
         }
       });
 
@@ -139,7 +110,7 @@ const Editor = ({
 
       socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
         if (language !== null) {
-          setSelectedLanguage(language);
+          setLang(language);
         }
       });
     }
@@ -163,8 +134,15 @@ const Editor = ({
             className="form-select btn dropdown-toggle"
             style={{ background: "#1c1e29", color: "white" }}
             id="inlineFormSelectPref"
-            value={selectedLanguage}
-            onChange={(e) => setSelectedLanguage(e.target.value)}
+            value={lang}
+            onChange={(e) => {
+              const shouldSwitch = window.confirm(
+                "Are you sure you want to change language? WARNING: Your current code will be lost."
+              );
+              if (shouldSwitch) {
+                setLang(e.target.value);
+              }
+            }}
           >
             <option value="Python">Python</option>
             <option value="Java">Java</option>
@@ -189,7 +167,30 @@ const Editor = ({
           </button>
         </div>
       </div>
-      <textarea id="realtimeEditor"></textarea>
+
+      <AceEditor
+        placeholder="Placeholder Text"
+        mode={lang === "Cpp" ? "c_cpp" : lang?.toLowerCase()}
+        theme="dracula"
+        name="blah2"
+        width="100"
+        height="62vh"
+        fontSize={18}
+        showPrintMargin={false}
+        showGutter={true}
+        highlightActiveLine={false}
+        value={code}
+        onChange={setCode}
+        editorProps={{$blockScrolling: Infinity}}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true,
+          showLineNumbers: true,
+          tabSize: 4
+        }}
+      />
+
       <div className="d-flex rounded bg-dark my-2 py-1">
         <div className="w-50 mx-1">
           <textarea

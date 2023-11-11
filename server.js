@@ -2,7 +2,7 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const axios = require("axios");
-const cors = require("cors"); 
+const cors = require("cors");
 const { Server } = require("socket.io");
 const ACTIONS = require("./src/Actions");
 
@@ -14,12 +14,13 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/run-code", async (req, res) => {
-  const { selectedLanguage, code, input } = req.body;
-
-  let language = selectedLanguage.toLowerCase();
+  console.log(req.body);
+  const { lang, code, input } = req.body;
+  console.log(lang, code, input);
+  let language = lang.toLowerCase();
   let fileExtension = "";
 
-  switch (selectedLanguage) {
+  switch (lang) {
     case "Python":
       fileExtension = "py";
       break;
