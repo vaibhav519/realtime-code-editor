@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "ace-builds";
 import AceEditor from "react-ace";
 import "brace/mode/javascript";
@@ -6,8 +6,8 @@ import "brace/mode/c_cpp";
 import "brace/mode/java";
 import "brace/mode/python";
 import "brace/theme/dracula";
-import "brace/snippets/html";
-import "brace/ext/language_tools";
+import "brace/ext/language_tools"
+import stubs from "../stubs";
 import ACTIONS from "../Actions";
 
 const Editor = ({
@@ -18,7 +18,6 @@ const Editor = ({
   onOutputChange,
   onLanguageChange,
 }) => {
-  const editorRef = useRef(null);
   const [lang, setLang] = useState("Python");
   const [output, setOutput] = useState("");
   const [input, setInput] = useState("");
@@ -30,7 +29,8 @@ const Editor = ({
       code,
       input,
     };
-    console.log(dataPayload);
+    setInput("")
+    setOutput("")
     try {
       const response = await fetch("http://localhost:5000/run-code", {
         method: "POST",
@@ -81,6 +81,7 @@ const Editor = ({
   }, [output]);
 
   useEffect(() => {
+    setCode(stubs[lang]);
     onLanguageChange(lang);
     socketRef.current?.emit(ACTIONS.LANGUAGE_CHANGE, {
       roomId,
@@ -136,12 +137,7 @@ const Editor = ({
             id="inlineFormSelectPref"
             value={lang}
             onChange={(e) => {
-              const shouldSwitch = window.confirm(
-                "Are you sure you want to change language? WARNING: Your current code will be lost."
-              );
-              if (shouldSwitch) {
-                setLang(e.target.value);
-              }
+              setLang(e.target.value);
             }}
           >
             <option value="Python">Python</option>
@@ -157,12 +153,13 @@ const Editor = ({
             className="btn runBtn"
             onClick={handleSubmit}
           >
+            Run
             <img
-              className="d-flex justify-content-center align-item-center"
+              className=""
               width="20"
               height="20"
               src="https://img.icons8.com/ios-glyphs/30/FFFFFF/play--v1.png"
-              alt="play--v1"
+              alt="play--v1"  
             />
           </button>
         </div>
@@ -172,7 +169,7 @@ const Editor = ({
         placeholder="Placeholder Text"
         mode={lang === "Cpp" ? "c_cpp" : lang?.toLowerCase()}
         theme="dracula"
-        name="blah2"
+        name="editor"
         width="100"
         height="62vh"
         fontSize={18}
@@ -181,14 +178,12 @@ const Editor = ({
         highlightActiveLine={false}
         value={code}
         onChange={setCode}
-        editorProps={{$blockScrolling: Infinity}}
-        setOptions={{
-          enableBasicAutocompletion: true,
-          enableLiveAutocompletion: true,
-          enableSnippets: true,
-          showLineNumbers: true,
-          tabSize: 4
-        }}
+        enableBasicAutocompletion={true}
+        enableLiveAutocompletion={true}
+        enableSnippets={false}
+        showLineNumbers={true}
+        tabSize={4}
+        $blockScrolling={{Infinity}}
       />
 
       <div className="d-flex rounded bg-dark my-2 py-1">
@@ -206,6 +201,7 @@ const Editor = ({
         </div>
         <div className="w-50 mx-2">
           <textarea
+            readOnly
             type="text"
             id="output"
             className="form-control"
