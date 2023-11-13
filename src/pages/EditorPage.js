@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import ACTIONS from "../Actions";
 import Client from "../components/Client";
 import Editor from "../components/Editor";
+import SideBar from "../components/SideBar";
 import { initSocket } from "../socket";
 import {
   useLocation,
@@ -101,27 +102,47 @@ const EditorPage = () => {
   }
 
   return (
-    <div className="mainWrap">
-      <div className="aside">
-        <div className="asideInner">
-          <div className="logo">
-            <img className="logoImage" src="/code-sync.png" alt="logo" />
-          </div>
-          <h3>Connected</h3>
-          <div className="clientsList">
-            {clients.map((client) => (
-              <Client key={client.socketId} username={client.username} />
-            ))}
+    <>
+      <nav className="navbar">
+        <div className="container">
+          <a className="navbar-brand" href="#">
+            <img
+              className="logoImage"
+              src="/code-sync.png"
+              alt="logo"
+              height="60"
+            />
+          </a>
+          <div>
+            <button type="button" class="btn btn-outline-light" onClick={copyRoomId}>
+              Share
+            </button>
+            <button type="button" class="btn btn-outline-light mx-4" onClick={leaveRoom}>
+              Leave
+            </button>
           </div>
         </div>
-        <button className="btn copyBtn" onClick={copyRoomId}>
-          Copy ROOM ID
-        </button>
-        <button className="btn leaveBtn" onClick={leaveRoom}>
-          Leave Room
-        </button>
-      </div>
-      <div className="editorWrap">
+      </nav>
+      <div className="mainWrap">
+        {/* <div className="asideInner">
+            <div className="logo">
+            <img className="logoImage" src="/code-sync.png" alt="logo" />
+          </div>
+            <h3>Connected</h3>
+            <div className="clientsList">
+              {clients.map((client) => (
+                <Client key={client.socketId} username={client.username} />
+              ))}
+            </div>
+          </div> */}
+        <SideBar clients={clients} />
+        {/* <button className="btn copyBtn" onClick={copyRoomId}>
+            Copy ROOM ID
+          </button>
+          <button className="btn leaveBtn" onClick={leaveRoom}>
+            Leave Room
+          </button> */}
+
         <Editor
           socketRef={socketRef}
           roomId={roomId}
@@ -139,7 +160,7 @@ const EditorPage = () => {
           }}
         />
       </div>
-    </div>
+    </>
   );
 };
 

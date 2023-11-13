@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "ace-builds";
+import ace from "ace-builds";
 import AceEditor from "react-ace";
 import "brace/mode/javascript";
 import "brace/mode/c_cpp";
 import "brace/mode/java";
 import "brace/mode/python";
 import "brace/theme/dracula";
-import "brace/ext/language_tools"
+import "brace/theme/monokai";
+import "brace/ext/language_tools";
 import stubs from "../stubs";
 import ACTIONS from "../Actions";
 
@@ -29,8 +30,8 @@ const Editor = ({
       code,
       input,
     };
-    setInput("")
-    setOutput("")
+    setInput("");
+    setOutput("");
     try {
       const response = await fetch("http://localhost:5000/run-code", {
         method: "POST",
@@ -55,6 +56,11 @@ const Editor = ({
       console.error("Backend API Request Error:", error);
     }
   };
+
+  const clearInputOutput = (()=>{
+    setInput("")
+    setOutput("")
+  })
 
   useEffect(() => {
     onCodeChange(code);
@@ -125,7 +131,7 @@ const Editor = ({
 
   return (
     <>
-      <div className="d-flex justify-content-between rounded p-2 m-1">
+      {/* <div className="d-flex justify-content-between rounded p-2 m-1">
         <div className="w-auto">
           <label
             className="visually-hidden"
@@ -163,49 +169,178 @@ const Editor = ({
             />
           </button>
         </div>
+      </div> */}
+      <div className="mainEditorWrap">
+        <div
+          className="editorHeader"
+          style={{ height: "50px", background: "#2D2F34" }}
+        >
+          <div style={{ width: "120px", position: "relative" }}>
+            <label
+              className="visually-hidden text-end"
+              htmlFor="inlineFormSelectPref"
+            ></label>
+            <select
+              className="form-select btn dropdown-toggle"
+              style={{
+                fontSize: "18px",
+                color: "#FFF",
+                background: "#2D2F34",
+                appearance: "none", // Hide default arrow in some browsers
+                paddingRight: "15 px", // Add space for a custom arrow
+              }}
+              id="inlineFormSelectPref"
+              value={lang}
+              onChange={(e) => {
+                setLang(e.target.value);
+              }}
+            >
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="Cpp">Cpp</option>
+              <option value="JavaScript">JavaScript</option>
+            </select>
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: "5px",
+                transform: "translateY(-50%)",
+                width: "0",
+                height: "0",
+                borderTop: "6px solid #FFF", // Set the color of the arrow
+                borderRight: "6px solid transparent",
+                borderLeft: "6px solid transparent",
+                pointerEvents: "none", // Make sure it doesn't interfere with clicks
+              }}
+            ></div>
+          </div>
+          <div>
+            <button
+              type="button"
+              id="run"
+              className="btn runBtn btn-outline-light"
+              onClick={handleSubmit}
+            >
+              Run Code
+            </button>
+          </div>
+        </div>
+        <div className="editorWrap">
+          <AceEditor
+            placeholder="Placeholder Text"
+            mode={lang === "Cpp" ? "c_cpp" : lang?.toLowerCase()}
+            theme="dracula"
+            name="editor"
+            width="100%"
+            height="100%"
+            fontSize={17}
+            showPrintMargin={false}
+            showGutter={true}
+            highlightActiveLine={false}
+            value={code}
+            onChange={setCode}
+            enableBasicAutocompletion={true}
+            enableLiveAutocompletion={true}
+            enableSnippets={false}
+            showLineNumbers={true}
+            tabSize={4}
+            $blockScrolling={{ Infinity }}
+            onLoad={(editor) => {
+              editor.renderer.setPadding(4);
+            }}
+          />
+        </div>
       </div>
 
-      <AceEditor
-        placeholder="Placeholder Text"
-        mode={lang === "Cpp" ? "c_cpp" : lang?.toLowerCase()}
-        theme="dracula"
-        name="editor"
-        width="100"
-        height="62vh"
-        fontSize={18}
-        showPrintMargin={false}
-        showGutter={true}
-        highlightActiveLine={false}
-        value={code}
-        onChange={setCode}
-        enableBasicAutocompletion={true}
-        enableLiveAutocompletion={true}
-        enableSnippets={false}
-        showLineNumbers={true}
-        tabSize={4}
-        $blockScrolling={{Infinity}}
-      />
-
-      <div className="d-flex rounded bg-dark my-2 py-1">
-        <div className="w-50 mx-1">
+      {/* <div
+        className="d-flex flex-column rounded bg-dark mx-2 border-none"
+        style={{ width: "28vw" }}
+      >
+        <div className="w-100">
           <textarea
             type="text"
             id="input"
             className="form-control"
-            style={{ height: "25vh", background: "#1c1e29", color: "white" }}
+            style={{ height: "40vh", background: "#1c1e29", color: "white" }}
             aria-label="Last name"
             placeholder="Enter Input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
           ></textarea>
         </div>
-        <div className="w-50 mx-2">
+        <div className="w-100 mt-2">
           <textarea
             readOnly
             type="text"
             id="output"
             className="form-control"
-            style={{ height: "25vh", background: "#1c1e29", color: "white" }}
+            style={{ height: "40vh", background: "#1c1e29", color: "white" }}
+            aria-label="Last name"
+            placeholder="Output"
+            value={output}
+            onChange={(e) => setOutput(e.target.value)}
+          ></textarea>
+        </div>
+      </div> */}
+      <div
+        className="d-flex flex-column rounded bg-dark border-none outline-none"
+        style={{ width: "30vw" }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "50px",
+            background: "#2D2F34",
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+          }}
+        >
+          <button
+            type="button"
+            class="btn runBtn btn-outline-light mx-4"
+            style={{ width: "70px" }}
+            onClick={clearInputOutput}
+          >
+            Clear
+          </button>
+        </div>
+
+        <textarea
+          type="text"
+          id="input"
+          className="w-100"
+          style={{
+            fontSize:"18px",
+            resize: "none",
+            height: "40vh",
+            background: "#1C2130",
+            color: "white",
+            padding: "10px",
+          }}
+          aria-label="Last name"
+          placeholder="Enter Input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        ></textarea>
+        <div className="w-100">
+          <textarea
+            readOnly
+            type="text"
+            id="output"
+            className="w-100"
+            rows={4}
+            cols={50}
+            style={{
+              fontSize:"18px",
+              resize: "none",
+              height: "40vh",
+              background: "#1C2130",
+              color: "white",
+              padding: "10px",
+              borderTop: "1px solid #565656",
+            }}
             aria-label="Last name"
             placeholder="Output"
             value={output}

@@ -1,11 +1,11 @@
 import React from 'react';
 import Avatar from 'react-avatar';
 
-const Client = ({ username }) => {
+const Client = ({ username, isWide }) => {
     return (
         <div className="client">
-            <Avatar name={username} size={50} round="14px" />
-            <span className="userName">{username}</span>
+            <Avatar name={username} size={40} round="14px" />
+            <span className="userName">{isWide ? username: ""}</span>
         </div>
     );
 };
