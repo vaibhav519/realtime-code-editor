@@ -33,7 +33,7 @@ const Editor = ({
     setInput("");
     setOutput("");
     try {
-      const response = await fetch("run-code", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}run-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
