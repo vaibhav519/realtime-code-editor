@@ -33,7 +33,7 @@ const Editor = ({
     setInput("");
     setOutput("");
     try {
-      const response = await fetch("http://localhost:5000/run-code", {
+      const response = await fetch("run-code", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
