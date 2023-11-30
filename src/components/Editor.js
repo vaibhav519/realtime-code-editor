@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ace from "ace-builds";
 import AceEditor from "react-ace";
 import "brace/mode/javascript";
 import "brace/mode/c_cpp";
@@ -22,32 +21,38 @@ const Editor = ({
   const [lang, setLang] = useState("Python");
   const [output, setOutput] = useState("");
   const [input, setInput] = useState("");
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(stubs[lang]);
 
   const handleSubmit = async () => {
+    let outMsg = "";
+    let errMsg = "";
     const dataPayload = {
       lang,
       code,
       input,
     };
-    setInput("");
-    setOutput("");
+    handleInputChange("");
+    handleOutputChange("");
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}run-code`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataPayload),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}run-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataPayload),
+        }
+      );
       if (response.ok) {
         const result = await response.json();
         if (result.stdout !== "") {
-          setOutput(result.stdout);
-        } else if (result.stderr !== "") {
-          let errMsg = result.stderr.replace(/File "[^"]+", /g, "");
-          setOutput(errMsg);
+          outMsg = result.stdout;
         }
+        if (result.stderr !== "") {
+          errMsg = result.stderr.replace(/File "[^"]+", /g, "");
+        }
+        handleOutputChange(outMsg + errMsg);
         console.log("Backend Response:", result);
       } else {
         console.error("Backend API Request Failed");
@@ -57,77 +62,93 @@ const Editor = ({
     }
   };
 
-  const clearInputOutput = (()=>{
-    setInput("")
-    setOutput("")
-  })
+  const clearInputOutput = () => {
+    handleInputChange("");
+    handleOutputChange("");
+  };
 
-  useEffect(() => {
-    onCodeChange(code);
+  const handleCodeChange = (newCode) => {
+    setCode(newCode);
+    console.log("when emiting", newCode);
     socketRef.current?.emit(ACTIONS.CODE_CHANGE, {
       roomId,
-      code,
+      code: newCode,
     });
-  }, [code]);
+  };
 
-  useEffect(() => {
-    onInputChange(input);
+  const handleInputChange = (newInput) => {
+    setInput(newInput);
     socketRef.current?.emit(ACTIONS.INPUT_CHANGE, {
       roomId,
-      input,
+      input: newInput,
     });
-  }, [input]);
+  };
 
-  useEffect(() => {
-    onOutputChange(output);
+  const handleOutputChange = (newOutput) => {
+    setOutput(newOutput);
     socketRef.current?.emit(ACTIONS.OUTPUT_CHANGE, {
       roomId,
-      output,
+      output: newOutput,
     });
-  }, [output]);
+  };
 
-  useEffect(() => {
-    setCode(stubs[lang]);
-    onLanguageChange(lang);
+  const handleLanguageChange = (newLang) => {
+    setLang(newLang);
+    handleCodeChange(stubs[newLang]);
     socketRef.current?.emit(ACTIONS.LANGUAGE_CHANGE, {
       roomId,
-      language: lang,
+      language: newLang,
     });
-  }, [lang]);
+  };
 
   useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
+    const currentSocketRef = socketRef.current;
+    if (currentSocketRef) {
+      currentSocketRef.on(ACTIONS.CODE_CHANGE, ({ code }) => {
         if (code !== null) {
+          console.log("when receiving and on change", code);
           setCode(code);
+          onCodeChange(code);
         }
       });
 
-      socketRef.current.on(ACTIONS.INPUT_CHANGE, ({ input }) => {
+      currentSocketRef.on(ACTIONS.INPUT_CHANGE, ({ input }) => {
         if (input !== null) {
           setInput(input);
+          onInputChange(input);
         }
       });
 
-      socketRef.current.on(ACTIONS.OUTPUT_CHANGE, ({ output }) => {
+      currentSocketRef.on(ACTIONS.OUTPUT_CHANGE, ({ output }) => {
         if (output !== null) {
           setOutput(output);
+          onOutputChange(output);
         }
       });
 
-      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
+      currentSocketRef.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
         if (language !== null) {
           setLang(language);
+          onLanguageChange(language);
         }
       });
     }
 
     return () => {
-      socketRef.current.off(ACTIONS.CODE_CHANGE);
-      socketRef.current.off(ACTIONS.INPUT_CHANGE);
-      socketRef.current.off(ACTIONS.OUTPUT_CHANGE);
+      if (currentSocketRef) {
+        currentSocketRef.off(ACTIONS.CODE_CHANGE);
+        currentSocketRef.off(ACTIONS.INPUT_CHANGE);
+        currentSocketRef.off(ACTIONS.OUTPUT_CHANGE);
+        currentSocketRef.off(ACTIONS.LANGUAGE_CHANGE);
+      }
     };
-  }, [socketRef.current]);
+  }, [
+    onCodeChange,
+    onInputChange,
+    onLanguageChange,
+    onOutputChange,
+    socketRef.current,
+  ]);
 
   return (
     <>
@@ -192,7 +213,7 @@ const Editor = ({
               id="inlineFormSelectPref"
               value={lang}
               onChange={(e) => {
-                setLang(e.target.value);
+                handleLanguageChange(e.target.value);
               }}
             >
               <option value="Python">Python</option>
@@ -239,7 +260,7 @@ const Editor = ({
             showGutter={true}
             highlightActiveLine={false}
             value={code}
-            onChange={setCode}
+            onChange={handleCodeChange}
             enableBasicAutocompletion={true}
             enableLiveAutocompletion={true}
             enableSnippets={false}
@@ -285,7 +306,7 @@ const Editor = ({
       </div> */}
       <div
         className="d-flex flex-column rounded bg-dark border-none outline-none"
-        style={{ width: "30vw" }}
+        style={{ width: "30.5vw" }}
       >
         <div
           style={{
@@ -312,7 +333,7 @@ const Editor = ({
           id="input"
           className="w-100"
           style={{
-            fontSize:"18px",
+            fontSize: "18px",
             resize: "none",
             height: "40vh",
             background: "#1C2130",
@@ -322,7 +343,7 @@ const Editor = ({
           aria-label="Last name"
           placeholder="Enter Input"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
         ></textarea>
         <div className="w-100">
           <textarea
@@ -333,7 +354,7 @@ const Editor = ({
             rows={4}
             cols={50}
             style={{
-              fontSize:"18px",
+              fontSize: "18px",
               resize: "none",
               height: "40vh",
               background: "#1C2130",
@@ -344,7 +365,7 @@ const Editor = ({
             aria-label="Last name"
             placeholder="Output"
             value={output}
-            onChange={(e) => setOutput(e.target.value)}
+            onChange={(e) => handleOutputChange(e.target.value)}
           ></textarea>
         </div>
       </div>
