@@ -136,7 +136,7 @@ footer a:hover {
 }
 
 .editorWrap {
-  height: 80.8vh;
+  height: calc(100vh - 137px);
 }
 
 .editorHeader {
@@ -150,7 +150,7 @@ footer a:hover {
   border-right: 1px solid #565656;
   color: #fff;
   width: 4.5vw;
-  height: 87.8vh;
+  height: calc(100vh - 87px);
   transition: width 0.4s;
   /* display: flex; */
   /* flex-direction: column;
@@ -183,7 +183,7 @@ textarea {
 }
 
 .clientsList {
-  margin-left: 12px;
+  margin-left: 1rem;
   display: flex;
   align-items: center;
   flex-wrap: wrap;

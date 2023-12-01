@@ -207,8 +207,8 @@ const Editor = ({
                 fontSize: "18px",
                 color: "#FFF",
                 background: "#2D2F34",
-                appearance: "none", // Hide default arrow in some browsers
-                paddingRight: "15 px", // Add space for a custom arrow
+                appearance: "none", 
+                paddingRight: "18px",
               }}
               id="inlineFormSelectPref"
               value={lang}
@@ -229,10 +229,10 @@ const Editor = ({
                 transform: "translateY(-50%)",
                 width: "0",
                 height: "0",
-                borderTop: "6px solid #FFF", // Set the color of the arrow
+                borderTop: "6px solid #FFF",
                 borderRight: "6px solid transparent",
                 borderLeft: "6px solid transparent",
-                pointerEvents: "none", // Make sure it doesn't interfere with clicks
+                pointerEvents: "none",
               }}
             ></div>
           </div>
@@ -327,46 +327,60 @@ const Editor = ({
             Clear
           </button>
         </div>
-
-        <textarea
-          type="text"
-          id="input"
-          className="w-100"
-          style={{
-            fontSize: "18px",
-            resize: "none",
-            height: "40vh",
-            background: "#1C2130",
-            color: "white",
-            padding: "10px",
-          }}
-          aria-label="Last name"
-          placeholder="Enter Input"
-          value={input}
-          onChange={(e) => handleInputChange(e.target.value)}
-        ></textarea>
-        <div className="w-100">
-          <textarea
-            readOnly
-            type="text"
-            id="output"
-            className="w-100"
-            rows={4}
-            cols={50}
-            style={{
-              fontSize: "18px",
-              resize: "none",
-              height: "40vh",
-              background: "#1C2130",
-              color: "white",
-              padding: "10px",
-              borderTop: "1px solid #565656",
-            }}
-            aria-label="Last name"
-            placeholder="Output"
-            value={output}
-            onChange={(e) => handleOutputChange(e.target.value)}
-          ></textarea>
+        <div
+          className="d-flex flex-column rounded bg-dark border-none outline-none"
+          style={{ width: "30.5vw" }}
+        >
+          <div
+            className="d-flex flex-column rounded bg-dark border-none outline-none"
+            style={{ width: "30.5vw" }}
+          >
+            <div
+              style={{
+                height: "calc(100vh - 137px)",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <textarea
+                type="text"
+                id="input"
+                className="w-100"
+                style={{
+                  fontSize: "18px",
+                  resize: "none",
+                  height: "50%",
+                  background: "#1C2130",
+                  color: "white",
+                  padding: "10px",
+                  borderBottom: "1px solid #565656",
+                }}
+                aria-label="Input"
+                placeholder="Enter Input"
+                value={input}
+                onChange={(e) => handleInputChange(e.target.value)}
+              ></textarea>
+              <textarea
+                readOnly
+                type="text"
+                id="output"
+                className="w-100"
+                style={{
+                  fontSize: "18px",
+                  resize: "none",
+                  height: "50%",
+                  background: "#1C2130",
+                  color: "white",
+                  padding: "10px",
+                  borderTop: "1px solid #565656",
+                }}
+                aria-label="Output"
+                placeholder="Output"
+                value={output}
+                onChange={(e) => handleOutputChange(e.target.value)}
+              ></textarea>
+            </div>
+          </div>
         </div>
       </div>
     </>
