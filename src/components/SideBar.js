@@ -8,7 +8,7 @@ const SideBar = ({ clients }) => {
     setIsWide((prev) => !prev);
   };
   return (
-    <div className={`sidebar ${isWide ? 'wide' : ''}`}>  
+    <div className={`sidebar ${isWide ? "wide" : ""}`}>
       <div className="burger">
         <img
           className="menu"
@@ -19,10 +19,14 @@ const SideBar = ({ clients }) => {
           onClick={handleImgClick}
         />
       </div>
-    {isWide && <p className="fs-5 text-center">Connected</p>}
-      <div className="clientsList">
+      {isWide && <p className="fs-5 text-center">Connected</p>}
+      <div className={isWide ? "clientsList" : "notExpandedClientsList"}>
         {clients.map((client) => (
-          <Client key={client.socketId} username={client.username} isWide={isWide}/>
+          <Client
+            key={client.socketId}
+            username={client.username}
+            isWide={isWide}
+          />
         ))}
       </div>
     </div>

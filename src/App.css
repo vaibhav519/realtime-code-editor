@@ -190,6 +190,14 @@ textarea {
   gap: 20px;
 }
 
+.notExpandedClientsList{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
 .client {
   display: flex;
   align-items: center;
