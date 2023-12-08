@@ -102,6 +102,7 @@ const EditorPage = () => {
 
   return (
     <>
+
       <nav className="navbar">
         <div className="container">
           <a className="navbar-brand" href="#">
@@ -113,16 +114,25 @@ const EditorPage = () => {
             />
           </a>
           <div>
-            <button type="button" class="btn btn-outline-light" onClick={copyRoomId}>
+            <button
+              type="button"
+              className="btn btn-outline-light"
+              onClick={copyRoomId}
+            >
               Share
             </button>
-            <button type="button" class="btn btn-outline-light mx-4" onClick={leaveRoom}>
+            <button
+              type="button"
+              className="btn btn-outline-light mx-4"
+              onClick={leaveRoom}
+            >
               Leave
             </button>
           </div>
         </div>
       </nav>
       <div className="mainWrap">
+        
         {/* <div className="asideInner">
             <div className="logo">
             <img className="logoImage" src="/code-sync.png" alt="logo" />
@@ -142,6 +152,7 @@ const EditorPage = () => {
             Leave Room
           </button> */}
 
+
         <Editor
           socketRef={socketRef}
           roomId={roomId}
@@ -159,6 +170,7 @@ const EditorPage = () => {
           }}
         />
       </div>
+
     </>
   );
 };

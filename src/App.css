@@ -145,6 +145,65 @@ footer a:hover {
   align-items: center;
 }
 
+
+.tooltip-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.tooltip-text {
+  font-size: 14px;
+  z-index: 1;
+  padding: 10px;
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px); 
+  left: 45%; 
+  transform: translateX(-50%);
+  background-color: #3a3d43;
+  color: rgba(250, 249, 246, 0.8);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.tooltip-container:hover .tooltip-text {
+  display: block; 
+}
+
+.custom-select {
+  padding-left: 18px !important;
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  top: 75%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  z-index: 1050; 
+}
+
+.modal-content {
+  border: 1px solid #383E43;
+  background-color: #212529;
+  color: #fff;
+}
+
+.modal-header{
+  color: #ADB5BD;
+  border-bottom: 1px solid #383E43
+}
+
+.modal-body{
+  color: #ADB5BD; 
+  font-size: 18px;
+}
+
+.modal-footer{
+  border-top: 1px solid #383E43
+}
+
 .sidebar {
   background-color: #383b40;
   border-right: 1px solid #565656;
@@ -152,10 +211,7 @@ footer a:hover {
   width: 4.5vw;
   height: calc(100vh - 87px);
   transition: width 0.4s;
-  /* display: flex; */
-  /* flex-direction: column;
-  justify-content: center;
-  align-items: center; */
+
 }
 
 textarea {
@@ -178,6 +234,19 @@ textarea {
   cursor: pointer;
 }
 
+
+/* Initial style for the SVG */
+.svg-icon {
+  cursor: pointer;
+  transition: fill 0.3s; /* Smooth transition for the fill color change */
+}
+
+/* Hover effect to make the color 10% lighter */
+.svg-icon:hover {
+  filter: brightness(130%); /* Increase brightness for a lighter color */
+}
+
+
 .wide {
   width: 12vw;
 }
@@ -190,7 +259,7 @@ textarea {
   gap: 20px;
 }
 
-.notExpandedClientsList{
+.notExpandedClientsList {
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRotateRight } from "@fortawesome/free-solid-svg-icons";
 import AceEditor from "react-ace";
 import "brace/mode/javascript";
 import "brace/mode/c_cpp";
@@ -8,6 +10,8 @@ import "brace/theme/dracula";
 import "brace/theme/monokai";
 import "brace/ext/language_tools";
 import stubs from "../stubs";
+import ResetModal from "./ResetModal";
+import LanguageInfoModal from "./LanguageInfoModal";
 import ACTIONS from "../Actions";
 
 const Editor = ({
@@ -22,6 +26,8 @@ const Editor = ({
   const [output, setOutput] = useState("");
   const [input, setInput] = useState("");
   const [code, setCode] = useState(stubs[lang]);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [showLanguageInfoModal, setShowLanguageInfoModal] = useState(false);
 
   const handleSubmit = async () => {
     let outMsg = "";
@@ -67,9 +73,16 @@ const Editor = ({
     handleOutputChange("");
   };
 
+  const onCloseResetModal = () => {
+    setShowResetModal(false);
+  };
+
+  const onCloseLanguageInfoModal = () => {
+    setShowLanguageInfoModal(false);
+  };
+
   const handleCodeChange = (newCode) => {
     setCode(newCode);
-    console.log("when emiting", newCode);
     socketRef.current?.emit(ACTIONS.CODE_CHANGE, {
       roomId,
       code: newCode,
@@ -106,7 +119,6 @@ const Editor = ({
     if (currentSocketRef) {
       currentSocketRef.on(ACTIONS.CODE_CHANGE, ({ code }) => {
         if (code !== null) {
-          console.log("when receiving and on change", code);
           setCode(code);
           onCodeChange(code);
         }
@@ -196,47 +208,104 @@ const Editor = ({
           className="editorHeader"
           style={{ height: "50px", background: "#2D2F34" }}
         >
-          <div style={{ width: "120px", position: "relative" }}>
-            <label
-              className="visually-hidden text-end"
-              htmlFor="inlineFormSelectPref"
-            ></label>
-            <select
-              className="form-select btn dropdown-toggle"
-              style={{
-                fontSize: "18px",
-                color: "#FFF",
-                background: "#2D2F34",
-                appearance: "none", 
-                paddingRight: "18px",
-              }}
-              id="inlineFormSelectPref"
-              value={lang}
-              onChange={(e) => {
-                handleLanguageChange(e.target.value);
-              }}
-            >
-              <option value="Python">Python</option>
-              <option value="Java">Java</option>
-              <option value="Cpp">Cpp</option>
-              <option value="JavaScript">JavaScript</option>
-            </select>
+          <div className="d-flex justify-content-center align-items-center mx-4">
             <div
               style={{
-                position: "absolute",
-                top: "50%",
-                right: "5px",
-                transform: "translateY(-50%)",
-                width: "0",
-                height: "0",
-                borderTop: "6px solid #FFF",
-                borderRight: "6px solid transparent",
-                borderLeft: "6px solid transparent",
-                pointerEvents: "none",
+                width: "140px",
+                position: "relative",
               }}
-            ></div>
+            >
+              <label
+                className="visually-hidden text-end"
+                htmlFor="inlineFormSelectPref"
+              ></label>
+              <select
+                className="form-select btn dropdown-toggle custom-select"
+                style={{
+                  padding: "0",
+                  textAlign: "left",
+                  fontSize: "18px",
+                  color: "#FFF",
+                  height: "36px",
+                  fontWeight: "450",
+                  background: "#3A3D43",
+                  appearance: "none",
+                }}
+                id="inlineFormSelectPref"
+                value={lang}
+                onChange={(e) => {
+                  handleLanguageChange(e.target.value);
+                }}
+              >
+                <option value="Python">Python</option>
+                <option value="Java">Java</option>
+                <option value="Cpp">Cpp</option>
+                <option value="JavaScript">JavaScript</option>
+              </select>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "18px",
+                  transform: "translateY(-50%)",
+                  width: "0",
+                  height: "0",
+                  borderTop: "6px solid #FFF",
+                  borderRight: "6px solid transparent",
+                  borderLeft: "6px solid transparent",
+                  pointerEvents: "none",
+                }}
+              ></div>
+            </div>
+            <div className="tooltip-container">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="4 4 16 16"
+                width="1.5rem"
+                height="1.5rem"
+                fill="white"
+                className="mx-2"
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowLanguageInfoModal(true)}
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M13.741 7.314a.95.95 0 00-.627-.272.95.95 0 00-.627.272.833.833 0 00-.246.614c0 .246.082.45.246.614a.85.85 0 00.627.245.85.85 0 00.627-.245.833.833 0 00.246-.614.832.832 0 00-.246-.614zm-.34 2.919c-.01-.273-.178-.41-.505-.41-.4.092-.914.36-1.541.805-.628.446-.969.696-1.023.75-.055.055-.082.091-.082.11l.082.136c.036.09.063.14.082.15.018.01.054-.004.109-.04l.627-.41c.564-.364.732-.16.505.614-.228.772-.505 1.94-.832 3.505-.055.709.127 1.013.545.913.419-.1.746-.231.982-.395l1.364-.955c.055-.036.073-.072.055-.109l-.11-.19c-.036-.037-.072-.055-.109-.055l-.027.027c-.218.145-.45.29-.695.436-.246.146-.405.146-.478 0-.036-.218.064-.754.3-1.609l.682-2.564c.055-.2.077-.436.068-.71z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+              <span className="tooltip-text">Language Info</span>
+            </div>
+            <LanguageInfoModal
+              language={lang}
+              onCloseModal={onCloseLanguageInfoModal}
+              showModal={showLanguageInfoModal}
+            />
           </div>
-          <div>
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="tooltip-container">
+              <FontAwesomeIcon
+                icon={faArrowRotateRight}
+                flip="horizontal"
+                onClick={() => {
+                  setShowResetModal(true);
+                }}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  color: "#ffffff",
+                  cursor: "pointer",
+                  marginRight: "1.5rem",
+                }}
+              />
+              <span className="tooltip-text">Reset Code</span>
+            </div>
+            <ResetModal
+              language={lang}
+              showModal={showResetModal}
+              onCloseModal={onCloseResetModal}
+              handleCodeChange={handleCodeChange}
+            />
             <button
               type="button"
               id="run"
@@ -320,7 +389,7 @@ const Editor = ({
         >
           <button
             type="button"
-            class="btn runBtn btn-outline-light mx-4"
+            className="btn runBtn btn-outline-light mx-4"
             style={{ width: "70px" }}
             onClick={clearInputOutput}
           >
@@ -353,7 +422,6 @@ const Editor = ({
                   background: "#1C2130",
                   color: "white",
                   padding: "10px",
-                  borderBottom: "1px solid #565656",
                 }}
                 aria-label="Input"
                 placeholder="Enter Input"
