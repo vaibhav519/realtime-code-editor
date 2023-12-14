@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
+import AceEditor from "react-ace";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRotateRight } from "@fortawesome/free-solid-svg-icons";
-import AceEditor from "react-ace";
+import SplitPane from "react-split-pane";
+
+// Brace modes
 import "brace/mode/javascript";
 import "brace/mode/c_cpp";
 import "brace/mode/java";
 import "brace/mode/python";
+
+// Brace themes and extensions
 import "brace/theme/dracula";
 import "brace/theme/monokai";
 import "brace/ext/language_tools";
-import stubs from "../stubs";
-import ResetModal from "./ResetModal";
-import LanguageInfoModal from "./LanguageInfoModal";
-import ACTIONS from "../Actions";
+
+// components
+import ResetModal from "../ResetModal/ResetModal";
+import LanguageInfoModal from "../LanguageInfoModal/LanguageInfoModal";
+
+// CSS
+import "./Editor.css";
+
+//constants
+import stubs from "../../stubs";
+import ACTIONS from "../../Actions";
 
 const Editor = ({
   socketRef,
@@ -164,73 +176,16 @@ const Editor = ({
 
   return (
     <>
-      {/* <div className="d-flex justify-content-between rounded p-2 m-1">
-        <div className="w-auto">
-          <label
-            className="visually-hidden"
-            htmlFor="inlineFormSelectPref"
-          ></label>
-          <select
-            className="form-select btn dropdown-toggle"
-            style={{ background: "#1c1e29", color: "white" }}
-            id="inlineFormSelectPref"
-            value={lang}
-            onChange={(e) => {
-              setLang(e.target.value);
-            }}
-          >
-            <option value="Python">Python</option>
-            <option value="Java">Java</option>
-            <option value="Cpp">Cpp</option>
-            <option value="JavaScript">JavaScript</option>
-          </select>
-        </div>
-        <div>
-          <button
-            type="button"
-            id="run"
-            className="btn runBtn"
-            onClick={handleSubmit}
-          >
-            Run
-            <img
-              className=""
-              width="20"
-              height="20"
-              src="https://img.icons8.com/ios-glyphs/30/FFFFFF/play--v1.png"
-              alt="play--v1"  
-            />
-          </button>
-        </div>
-      </div> */}
-      <div className="mainEditorWrap">
-        <div
-          className="editorHeader"
-          style={{ height: "50px", background: "#2D2F34" }}
-        >
+      <div className="editor">
+        <div className="editor-header">
           <div className="d-flex justify-content-center align-items-center mx-4">
-            <div
-              style={{
-                width: "140px",
-                position: "relative",
-              }}
-            >
+            <div className="dropdown">
               <label
                 className="visually-hidden text-end"
                 htmlFor="inlineFormSelectPref"
               ></label>
               <select
-                className="form-select btn dropdown-toggle custom-select"
-                style={{
-                  padding: "0",
-                  textAlign: "left",
-                  fontSize: "18px",
-                  color: "#FFF",
-                  height: "36px",
-                  fontWeight: "450",
-                  background: "#3A3D43",
-                  appearance: "none",
-                }}
+                className="form-select btn dropdown-toggle dropdown-select"
                 id="inlineFormSelectPref"
                 value={lang}
                 onChange={(e) => {
@@ -242,20 +197,7 @@ const Editor = ({
                 <option value="Cpp">Cpp</option>
                 <option value="JavaScript">JavaScript</option>
               </select>
-              <div
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "18px",
-                  transform: "translateY(-50%)",
-                  width: "0",
-                  height: "0",
-                  borderTop: "6px solid #FFF",
-                  borderRight: "6px solid transparent",
-                  borderLeft: "6px solid transparent",
-                  pointerEvents: "none",
-                }}
-              ></div>
+              <div className="dropdown-arrow"></div>
             </div>
             <div className="tooltip-container">
               <svg
@@ -264,8 +206,7 @@ const Editor = ({
                 width="1.5rem"
                 height="1.5rem"
                 fill="white"
-                className="mx-2"
-                style={{ cursor: "pointer" }}
+                className="mx-2 cursor-pointer"
                 onClick={() => setShowLanguageInfoModal(true)}
               >
                 <path
@@ -290,13 +231,7 @@ const Editor = ({
                 onClick={() => {
                   setShowResetModal(true);
                 }}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  color: "#ffffff",
-                  cursor: "pointer",
-                  marginRight: "1.5rem",
-                }}
+                className="reset-icon"
               />
               <span className="tooltip-text">Reset Code</span>
             </div>
@@ -316,9 +251,9 @@ const Editor = ({
             </button>
           </div>
         </div>
-        <div className="editorWrap">
+        <div className="editor-body">
           <AceEditor
-            placeholder="Placeholder Text"
+            placeholder="Write your code here"
             mode={lang === "Cpp" ? "c_cpp" : lang?.toLowerCase()}
             theme="dracula"
             name="editor"
@@ -342,113 +277,38 @@ const Editor = ({
           />
         </div>
       </div>
-
-      {/* <div
-        className="d-flex flex-column rounded bg-dark mx-2 border-none"
-        style={{ width: "28vw" }}
-      >
-        <div className="w-100">
-          <textarea
-            type="text"
-            id="input"
-            className="form-control"
-            style={{ height: "40vh", background: "#1c1e29", color: "white" }}
-            aria-label="Last name"
-            placeholder="Enter Input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          ></textarea>
-        </div>
-        <div className="w-100 mt-2">
-          <textarea
-            readOnly
-            type="text"
-            id="output"
-            className="form-control"
-            style={{ height: "40vh", background: "#1c1e29", color: "white" }}
-            aria-label="Last name"
-            placeholder="Output"
-            value={output}
-            onChange={(e) => setOutput(e.target.value)}
-          ></textarea>
-        </div>
-      </div> */}
-      <div
-        className="d-flex flex-column rounded bg-dark border-none outline-none"
-        style={{ width: "30.5vw" }}
-      >
-        <div
-          style={{
-            width: "100%",
-            height: "50px",
-            background: "#2D2F34",
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "center",
-          }}
-        >
+      <div className="input-output-bar d-flex flex-column">
+        <div className="input-output-bar-header">
           <button
             type="button"
-            className="btn runBtn btn-outline-light mx-4"
-            style={{ width: "70px" }}
+            className="btn runBtn btn-outline-light mx-4 clear-btn"
             onClick={clearInputOutput}
           >
             Clear
           </button>
         </div>
-        <div
-          className="d-flex flex-column rounded bg-dark border-none outline-none"
-          style={{ width: "30.5vw" }}
-        >
-          <div
-            className="d-flex flex-column rounded bg-dark border-none outline-none"
-            style={{ width: "30.5vw" }}
-          >
-            <div
-              style={{
-                height: "calc(100vh - 137px)",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <textarea
-                type="text"
-                id="input"
-                className="w-100"
-                style={{
-                  fontSize: "18px",
-                  resize: "none",
-                  height: "50%",
-                  background: "#1C2130",
-                  color: "white",
-                  padding: "10px",
-                }}
-                aria-label="Input"
-                placeholder="Enter Input"
-                value={input}
-                onChange={(e) => handleInputChange(e.target.value)}
-              ></textarea>
-              <textarea
-                readOnly
-                type="text"
-                id="output"
-                className="w-100"
-                style={{
-                  fontSize: "18px",
-                  resize: "none",
-                  height: "50%",
-                  background: "#1C2130",
-                  color: "white",
-                  padding: "10px",
-                  borderTop: "1px solid #565656",
-                }}
-                aria-label="Output"
-                placeholder="Output"
-                value={output}
-                onChange={(e) => handleOutputChange(e.target.value)}
-              ></textarea>
-            </div>
-          </div>
+
+        <div className="input-output-bar-body">
+          <textarea
+            type="text"
+            id="input"
+            className="text-area"
+            aria-label="Input"
+            placeholder="Enter Input"
+            value={input}
+            onChange={(e) => handleInputChange(e.target.value)}
+          ></textarea>
+          <textarea
+            readOnly
+            type="text"
+            id="output"
+            className="text-area"
+            style={{ borderTop: "1px solid #565656" }}
+            aria-label="Output"
+            placeholder="Output"
+            value={output}
+            onChange={(e) => handleOutputChange(e.target.value)}
+          ></textarea>
         </div>
       </div>
     </>

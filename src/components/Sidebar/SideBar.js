@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Client from "./Client";
+import Client from "../Client/Client";
+import './Sidebar.css'
 
 const SideBar = ({ clients }) => {
   const [isWide, setIsWide] = useState(false);
@@ -11,7 +12,7 @@ const SideBar = ({ clients }) => {
     <div className={`sidebar ${isWide ? "wide" : ""}`}>
       <div className="burger">
         <img
-          className="menu"
+          className="cursor-pointer"
           width="30"
           height="30"
           src="https://img.icons8.com/glyph-neue/39/FFFFFF/menu--v1.png"
@@ -20,7 +21,7 @@ const SideBar = ({ clients }) => {
         />
       </div>
       {isWide && <p className="fs-5 text-center">Connected</p>}
-      <div className={isWide ? "clientsList" : "notExpandedClientsList"}>
+      <div className={isWide ? "clientsList mx-2" : "notExpandedClientsList"}>
         {clients.map((client) => (
           <Client
             key={client.socketId}

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import ACTIONS from "../Actions";
-import Editor from "../components/Editor";
-import SideBar from "../components/SideBar";
+import Editor from "../components/Editor/Editor";
+import SideBar from "../components/Sidebar/SideBar";
+import Navbar from "components/Navbar/Navbar";
 import { initSocket } from "../socket";
 import {
   useLocation,
@@ -81,8 +82,7 @@ const EditorPage = () => {
       socketRef.current.off(ACTIONS.DISCONNECTED);
     };
   }, []);
-
-  async function copyRoomId() {
+  const copyRoomId = async () => {
     try {
       await navigator.clipboard.writeText(roomId);
       toast.success("Room ID has been copied to your clipboard");
@@ -90,11 +90,11 @@ const EditorPage = () => {
       toast.error("Could not copy the Room ID");
       console.error(err);
     }
-  }
+  };
 
-  function leaveRoom() {
+  const leaveRoom = () => {
     reactNavigator("/");
-  }
+  };
 
   if (!location.state) {
     return <Navigate to="/" />;
@@ -102,57 +102,9 @@ const EditorPage = () => {
 
   return (
     <>
-
-      <nav className="navbar">
-        <div className="container">
-          <a className="navbar-brand" href="#">
-            <img
-              className="logoImage"
-              src="/code-sync.png"
-              alt="logo"
-              height="60"
-            />
-          </a>
-          <div>
-            <button
-              type="button"
-              className="btn btn-outline-light"
-              onClick={copyRoomId}
-            >
-              Share
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-light mx-4"
-              onClick={leaveRoom}
-            >
-              Leave
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar copyRoomId={copyRoomId} leaveRoom={leaveRoom} />
       <div className="mainWrap">
-        
-        {/* <div className="asideInner">
-            <div className="logo">
-            <img className="logoImage" src="/code-sync.png" alt="logo" />
-          </div>
-            <h3>Connected</h3>
-            <div className="clientsList">
-              {clients.map((client) => (
-                <Client key={client.socketId} username={client.username} />
-              ))}
-            </div>
-          </div> */}
         <SideBar clients={clients} />
-        {/* <button className="btn copyBtn" onClick={copyRoomId}>
-            Copy ROOM ID
-          </button>
-          <button className="btn leaveBtn" onClick={leaveRoom}>
-            Leave Room
-          </button> */}
-
-
         <Editor
           socketRef={socketRef}
           roomId={roomId}
@@ -170,7 +122,6 @@ const EditorPage = () => {
           }}
         />
       </div>
-
     </>
   );
 };

@@ -1,0 +1,9 @@
+.navbar {
+    background-color: #1f2023;
+    border-bottom: 1px solid #424242;
+  }
+  .navbar-brand {
+    color: white;
+    font-size: 26px;
+  }
+  

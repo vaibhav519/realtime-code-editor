@@ -14,15 +14,6 @@
   max-width: 90%;
 }
 
-.navbar {
-  background-color: #1f2023;
-  border-bottom: 1px solid #424242;
-}
-.navbar-brand {
-  color: white;
-  font-size: 26px;
-}
-
 footer {
   position: fixed;
   bottom: 0;
@@ -78,21 +69,6 @@ footer a {
   border: 1px solid #fff;
 }
 
-.copyBtn {
-  background: #eee;
-}
-
-.copyBtn:hover {
-  background: #ddd;
-}
-
-.runBtn {
-  height: 36px;
-  font-size: 18px;
-  padding: 0px;
-  margin-right: 25px;
-}
-
 .leaveBtn,
 .runBtn {
   width: 100px;
@@ -128,150 +104,49 @@ footer a:hover {
 
 .mainWrap {
   display: flex;
+  height: calc(100vh - 87px);
 }
 
-.mainEditorWrap {
-  border-right: 1px solid #565656;
-  width: 65%;
-}
-
-.editorWrap {
-  height: calc(100vh - 137px);
-}
-
-.editorHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-.tooltip-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.tooltip-text {
-  font-size: 14px;
-  z-index: 1;
-  padding: 10px;
-  display: none;
-  position: absolute;
-  top: calc(100% + 10px); 
-  left: 45%; 
-  transform: translateX(-50%);
-  background-color: #3a3d43;
-  color: rgba(250, 249, 246, 0.8);
-  border-radius: 5px;
-  white-space: nowrap;
-}
-
-.tooltip-container:hover .tooltip-text {
-  display: block; 
-}
-
-.custom-select {
-  padding-left: 18px !important;
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .modal {
   display: block;
   position: fixed;
-  top: 75%; 
-  left: 50%; 
+  top: 75%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1050; 
+  z-index: 1050;
 }
 
 .modal-content {
-  border: 1px solid #383E43;
-  background-color: #212529;
+  border: 1px solid #202225;
+  background-color: #2f3136;
   color: #fff;
 }
 
-.modal-header{
-  color: #ADB5BD;
-  border-bottom: 1px solid #383E43
+.modal-header {
+  color: #fff;
+  border-bottom: 1px solid #202225;
 }
 
-.modal-body{
-  color: #ADB5BD; 
+.modal-body {
+  color: #fff;
   font-size: 18px;
 }
 
-.modal-footer{
-  border-top: 1px solid #383E43
+.modal-footer {
+  border-top: 1px solid #202225;
 }
 
-.sidebar {
-  background-color: #383b40;
-  border-right: 1px solid #565656;
-  color: #fff;
-  width: 4.5vw;
-  height: calc(100vh - 87px);
-  transition: width 0.4s;
-
-}
-
-textarea {
-  outline: none !important;
-  box-shadow: none;
-  border: none;
-}
-
-.burger {
-  width: 100%;
-  height: 50px;
-  border-bottom: 0.3px solid #565656;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.menu {
-  cursor: pointer;
-}
-
-
-/* Initial style for the SVG */
 .svg-icon {
   cursor: pointer;
-  transition: fill 0.3s; /* Smooth transition for the fill color change */
+  transition: fill 0.3s;
 }
 
-/* Hover effect to make the color 10% lighter */
 .svg-icon:hover {
-  filter: brightness(130%); /* Increase brightness for a lighter color */
-}
-
-
-.wide {
-  width: 12vw;
-}
-
-.clientsList {
-  margin-left: 1rem;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.notExpandedClientsList {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.client {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  font-weight: bold;
+  filter: brightness(130%);
 }
 
 .usersConnected {
@@ -279,10 +154,6 @@ textarea {
   font-size: 16px;
   font-weight: 400;
   margin-bottom: 10px;
-}
-
-.userName {
-  margin-top: 10px;
 }
 
 .logo {
@@ -307,39 +178,11 @@ textarea {
 
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #1c2130; /* Matches ace monokai */
+  background-color: #1c2130;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #909090;
-  outline: 1px solid #1c2130;
-  border-radius: 10px;
-}
-
-/* Ace Editor */
-
-.ace-dracula {
-  background-color: #1c2130;
-}
-
-.ace_editor,
-.ace_editor * {
-  line-height: 1.6rem !important;
-}
-
-.ace_scrollbar::-webkit-scrollbar {
-  height: 7px;
-  width: 5px;
-}
-
-.ace_scrollbar::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #1c2130; /* Matches ace monokai */
-  border-radius: 10px;
-}
-
-.ace_scrollbar::-webkit-scrollbar-thumb {
   background-color: #909090;
   outline: 1px solid #1c2130;
   border-radius: 10px;

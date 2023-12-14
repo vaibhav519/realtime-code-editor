@@ -1,4 +1,4 @@
-import stubs from "../stubs";
+import stubs from "../../stubs";
 
 const ResetModal = ({
   language,
@@ -6,7 +6,6 @@ const ResetModal = ({
   showModal,
   handleCodeChange,
 }) => {
-
   const resetCode = () => {
     handleCodeChange(stubs[language]);
     onCloseModal();

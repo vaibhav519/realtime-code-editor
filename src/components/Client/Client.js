@@ -1,5 +1,6 @@
 import React from 'react';
 import Avatar from 'react-avatar';
+import './Client.css'
 
 const Client = ({ username, isWide }) => {
     return (
