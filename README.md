@@ -1,3 +1,21 @@
+<h1>🤝 Contributing</h1>
+
+<p>We welcome contributions of all kinds!</p>
+
+<h3>Found a Bug?</h3>
+<p>
+If you discover a bug or have a feature request, please <a href="https://github.com/vaibhav519/realtime-code-editor/issues">open an issue</a>.
+Make sure to include as much detail as possible and steps to reproduce the issue, if applicable.
+</p>
+
+<h3>General Guidelines</h3>
+<ul>
+  <li>Fork the repository and create a new branch for your changes.</li>
+  <li>Write clear and concise commit messages.</li>
+  <li>If relevant, add documentation.</li>
+  <li>Open a pull request (PR) with a description of your changes.</li>
+</ul>
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
